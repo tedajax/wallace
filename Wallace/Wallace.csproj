@@ -18,13 +18,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\wallace.png" />
     <Content Include="default.htm" />
+    <TypeScriptCompile Include="game.ts" />
+    <Content Include="Scripts\pixi-1.4.1.js" />
+    <Content Include="Scripts\pixi-1.4.1.min.js" />
+    <Content Include="Scripts\three.js" />
+    <TypeScriptCompile Include="Scripts\typings\threejs\three.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\pixi\pixi.d.ts" />
+    <None Include="Scripts\typings\pixi\webgl.d.ts" />
     <Content Include="web.config" />
+    <Content Include="WebGL.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

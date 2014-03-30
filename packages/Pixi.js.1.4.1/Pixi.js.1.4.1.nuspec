@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Pixi.js</id>
+    <version>1.4.1</version>
+    <title>Pixi.js</title>
+    <authors>Mat Groves</authors>
+    <owners>Mat Groves</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>http://www.pixijs.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A 2D webGL rendering framework with canvas fallback.</description>
+    <releaseNotes />
+    <copyright>Copyright (c) 2012, Mat Groves</copyright>
+    <language />
+    <tags>Pixi Pixijs Pixi.js webgl canvas</tags>
+    <references />
+  </metadata>
+</package>
