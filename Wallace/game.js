@@ -1,17 +1,6 @@
 /// <reference path="Scripts/typings/pixi/pixi.d.ts" />
-
-class Game {
-    canvas: HTMLCanvasElement;
-    width: number;
-    height: number;
-
-    stage: PIXI.Stage;
-    renderer: PIXI.IPixiRenderer;
-
-    texture: PIXI.Texture;
-    wallace: PIXI.Sprite;
-
-    constructor() {
+var Game = (function () {
+    function Game() {
         this.width = 960;
         this.height = 540;
 
@@ -30,11 +19,10 @@ class Game {
 
         this.stage.addChild(this.wallace);
     }
+    Game.prototype.initialize = function () {
+    };
 
-    initialize() {
-    }
-
-    update(dt: number) {
+    Game.prototype.update = function (dt) {
         if (input.getKey(Keys.RIGHT)) {
             this.wallace.rotation += Math.PI * dt;
         }
@@ -42,12 +30,14 @@ class Game {
         if (input.getKey(Keys.LEFT)) {
             this.wallace.rotation -= Math.PI * dt;
         }
-    }
+    };
 
-    render() {
+    Game.prototype.render = function () {
         this.renderer.render(this.stage);
-    }
+    };
 
-    onResize() {
-    }
-}
+    Game.prototype.onResize = function () {
+    };
+    return Game;
+})();
+//# sourceMappingURL=game.js.map

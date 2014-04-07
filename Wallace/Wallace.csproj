@@ -21,6 +21,7 @@
     <Content Include="assets\wallace.png" />
     <Content Include="default.htm" />
     <TypeScriptCompile Include="game.ts" />
+    <TypeScriptCompile Include="input.ts" />
     <Content Include="Scripts\pixi-1.4.1.js" />
     <Content Include="Scripts\pixi-1.4.1.min.js" />
     <Content Include="Scripts\three.js" />

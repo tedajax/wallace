@@ -1,14 +1,12 @@
-declare var dcodeIO;
-
-var game: Game;
-var input: Input;
-var currTime: number;
-var prevTime: number;
+var game;
+var input;
+var currTime;
+var prevTime;
 
 window.onload = initialize;
 
-var FPSElement: HTMLElement;
-var InfoElement: HTMLElement;
+var FPSElement;
+var InfoElement;
 var FPS = 60;
 var framesThisSecond = 0;
 var lastTick;
@@ -17,9 +15,10 @@ var normalTimeScale = 1;
 var slowedTimeScale = 0.25;
 var timeScale = 1;
 
-function sleep(time: number) {
+function sleep(time) {
     var start = performance.now();
-    while (performance.now() < start + time);
+    while (performance.now() < start + time)
+        ;
 }
 
 function initialize() {
@@ -68,7 +67,6 @@ function render() {
     }
 
     //InfoElement.textContent = "Entities: " + game.gameObjects.entityCount;
-
     requestAnimationFrame(render);
 }
 
@@ -79,3 +77,4 @@ function loadJsonFile(url) {
 
     return JSON.parse(request.responseText);
 }
+//# sourceMappingURL=app.js.map
