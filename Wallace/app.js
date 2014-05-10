@@ -1,3 +1,6 @@
+/// <reference path="Scripts/typings/pixi/pixi.d.ts" />
+/// <reference path="Scripts/typings/threejs/three.d.ts" />
+/// <reference path="Scripts/typings/box2d/box2dweb.d.ts" />
 var game;
 var input;
 var currTime;
@@ -31,6 +34,8 @@ function initialize() {
     //}, false);
     game = new Game();
     input = new Input();
+    input.registerAxis("horizontal", Keys.RIGHT, Keys.LEFT);
+    input.registerAxis("vertical", Keys.UP, Keys.DOWN);
 
     FPSElement = document.getElementById("fps");
     InfoElement = document.getElementById("info");

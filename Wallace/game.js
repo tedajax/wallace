@@ -1,39 +1,57 @@
-/// <reference path="Scripts/typings/pixi/pixi.d.ts" />
 var Game = (function () {
     function Game() {
         this.width = 960;
         this.height = 540;
+        this.FPS = FPS;
 
         this.stage = new PIXI.Stage(0x000000);
         this.renderer = PIXI.autoDetectRenderer(this.width, this.height);
         this.canvas = this.renderer.view;
+        this.disableCanvasRMB(this.canvas);
         document.getElementById("container").appendChild(this.canvas);
 
-        this.texture = PIXI.Texture.fromImage("assets/wallace.png");
-        this.wallace = new PIXI.Sprite(this.texture);
+        this.entities = new EntityManager();
 
-        this.wallace.anchor.x = 0.5;
-        this.wallace.anchor.y = 0.5;
-        this.wallace.position.x = 200;
-        this.wallace.position.y = 150;
+        var entity = this.entities.createEntity("sprite", "wallace_controller");
+        entity.sendMessage("setSprite", "assets/wallace.png");
+        entity.sendMessage("addToStage", this.stage);
 
-        this.stage.addChild(this.wallace);
+        this.physics = new PhysicsManager(0.0, -9.8);
+
+        var groundDef = new Box2D.Dynamics.b2BodyDef();
+        groundDef.position.Set(0.0, -10.0);
+        this.physGroundBody = this.physWorld.CreateBody(groundDef);
+
+        var groundBox = new Box2D.Collision.Shapes.b2PolygonShape();
+        groundBox.SetAsBox(50.0, 10.0);
+        var fixtureDef = new Box2D.Dynamics.b2FixtureDef();
+        fixtureDef.density = 1.0;
+        fixtureDef.friction = 0.5;
+        fixtureDef.restitution = 0.2;
+        fixtureDef.shape = groundBox;
+
+        this.physGroundBody.CreateFixture(fixtureDef);
     }
+    Game.prototype.disableCanvasRMB = function (canvas) {
+        canvas.addEventListener("contextmenu", function (e) {
+            if (e.button == 2) {
+                e.preventDefault();
+                return false;
+            }
+        }, false);
+    };
+
     Game.prototype.initialize = function () {
     };
 
     Game.prototype.update = function (dt) {
-        if (input.getKey(Keys.RIGHT)) {
-            this.wallace.rotation += Math.PI * dt;
-        }
-
-        if (input.getKey(Keys.LEFT)) {
-            this.wallace.rotation -= Math.PI * dt;
-        }
+        this.entities.update(dt);
+        this.physics.update();
     };
 
     Game.prototype.render = function () {
         this.renderer.render(this.stage);
+        this.entities.render();
     };
 
     Game.prototype.onResize = function () {

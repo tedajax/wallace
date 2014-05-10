@@ -9,7 +9,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -19,15 +19,26 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="assets\wallace.png" />
+    <TypeScriptCompile Include="component.ts" />
+    <TypeScriptCompile Include="componentfactory.ts" />
+    <TypeScriptCompile Include="basiccomponents.ts" />
     <Content Include="default.htm" />
     <TypeScriptCompile Include="game.ts" />
     <TypeScriptCompile Include="input.ts" />
+    <TypeScriptCompile Include="entity.ts" />
+    <TypeScriptCompile Include="entitymanager.ts" />
+    <TypeScriptCompile Include="messageable.ts" />
+    <TypeScriptCompile Include="wallacecontroller.ts" />
+    <TypeScriptCompile Include="physics.ts" />
+    <Content Include="Scripts\Box2dWeb-2.1.a.3.js" />
+    <Content Include="Scripts\Box2dWeb-2.1.a.3.min.js" />
     <Content Include="Scripts\pixi-1.4.1.js" />
     <Content Include="Scripts\pixi-1.4.1.min.js" />
     <Content Include="Scripts\three.js" />
     <TypeScriptCompile Include="Scripts\typings\threejs\three.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\pixi\pixi.d.ts" />
-    <None Include="Scripts\typings\pixi\webgl.d.ts" />
+    <TypeScriptCompile Include="spritecomponent.ts" />
+    <Content Include="Scripts\typings\box2d\box2dweb.d.ts" />
     <Content Include="web.config" />
     <Content Include="WebGL.d.ts" />
   </ItemGroup>

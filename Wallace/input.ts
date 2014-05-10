@@ -86,12 +86,73 @@ class MouseState {
     }
 }
 
+class InputAxisKey {
+    keycode: number;
+    scale: number;
+
+    constructor(keycode: number, scale: number) {
+        this.keycode = keycode;
+        this.scale = Math.min(Math.max(scale, -1), 1);
+    }
+}
+
+class InputAxis {
+    name: string;
+    keys: Array<InputAxisKey>;
+
+    private axisValue: number;
+
+    constructor(name: string) {
+        this.name = name;
+        this.keys = [];
+        this.axisValue = 0;
+    }
+
+    addKeys(keycode: number, scale: number) {
+        this.keys.push(new InputAxisKey(keycode, scale));
+    }
+
+    addPositiveKey(keycode: number, scale: number) {
+        this.keys.push(new InputAxisKey(keycode, Math.abs(scale)));
+    }
+
+    addNegativeKey(keycode: number, scale: number) {
+        this.keys.push(new InputAxisKey(keycode, -Math.abs(scale)));
+    }
+
+    updateAxisValue(input: Input) {
+        var maxValue = 0;
+        var minValue = 0;
+        for (var i = 0, len = this.keys.length; i < len; ++i) {
+            var k = this.keys[i].keycode;
+            var s = this.keys[i].scale;
+            if (input.getKey(k)) {
+                if (s > maxValue) {
+                    maxValue = s;
+                }
+                if (s < minValue) {
+                    minValue = s;
+                }
+            }
+        }
+
+        this.axisValue = maxValue + minValue;
+    }
+
+    getAxisValue() {
+        return this.axisValue;
+    }
+}
+
 class Input {
     newKeys: boolean[];
     oldKeys: boolean[];
 
     newMouseState: MouseState;
     oldMouseState: MouseState;
+
+    buttons: { [name: string]: Array<number> };
+    axes: { [name: string]: InputAxis };
 
     constructor() {
         this.newKeys = [];
@@ -104,6 +165,9 @@ class Input {
 
         this.newMouseState = new MouseState();
         this.oldMouseState = new MouseState();
+
+        this.buttons = {};
+        this.axes = {};
 
         this.initEvents();
     }
@@ -147,6 +211,92 @@ class Input {
     update() {
         this.oldKeys = this.newKeys.slice(0);
         this.oldMouseState.clone(this.newMouseState);
+    }
+
+    registerAxis(name: string, positiveKey?: number, negativeKey?: number) {
+        if (this.axes[name] == null) {
+            this.axes[name] = new InputAxis(name);
+        }
+
+        if (positiveKey != null) {
+            this.axes[name].addPositiveKey(positiveKey, 1.0);
+        }
+        if (negativeKey != null) {
+            this.axes[name].addNegativeKey(negativeKey, 1.0);
+        }
+    }
+
+    getAxis(name: string) {
+        if (this.axes[name] == null) {
+            throw "Error no axis named " + name;
+        }
+
+        this.axes[name].updateAxisValue(this);
+        return this.axes[name].getAxisValue();
+    }
+
+    registerButton(name: string, ...keys: number[]) {
+        if (this.buttons[name] == null) {
+            this.buttons[name] = [];
+        }
+
+        for (var i = 0, len = keys.length; i < len; ++i) {
+            //todo do we care about the dupes?
+            this.buttons[name].push(keys[i]);
+        }
+    }
+
+    getButton(name: string) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    getButtonDown(name: string) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        var result = false;
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                result = true;
+            }
+            if (this.oldKeys[this.buttons[name][i]]) {
+                return false;
+            }
+        }
+        
+        return result;
+    }
+
+    getButtonUp(name: string) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        var result = false;
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                return false;
+            }
+            if (this.oldKeys[this.buttons[name][i]]) {
+                result = true;
+            }
+        }
+
+        return result;
     }
 
     getKey(keycode: number) {

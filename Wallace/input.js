@@ -88,6 +88,57 @@ var MouseState = (function () {
     return MouseState;
 })();
 
+var InputAxisKey = (function () {
+    function InputAxisKey(keycode, scale) {
+        this.keycode = keycode;
+        this.scale = Math.min(Math.max(scale, -1), 1);
+    }
+    return InputAxisKey;
+})();
+
+var InputAxis = (function () {
+    function InputAxis(name) {
+        this.name = name;
+        this.keys = [];
+        this.axisValue = 0;
+    }
+    InputAxis.prototype.addKeys = function (keycode, scale) {
+        this.keys.push(new InputAxisKey(keycode, scale));
+    };
+
+    InputAxis.prototype.addPositiveKey = function (keycode, scale) {
+        this.keys.push(new InputAxisKey(keycode, Math.abs(scale)));
+    };
+
+    InputAxis.prototype.addNegativeKey = function (keycode, scale) {
+        this.keys.push(new InputAxisKey(keycode, -Math.abs(scale)));
+    };
+
+    InputAxis.prototype.updateAxisValue = function (input) {
+        var maxValue = 0;
+        var minValue = 0;
+        for (var i = 0, len = this.keys.length; i < len; ++i) {
+            var k = this.keys[i].keycode;
+            var s = this.keys[i].scale;
+            if (input.getKey(k)) {
+                if (s > maxValue) {
+                    maxValue = s;
+                }
+                if (s < minValue) {
+                    minValue = s;
+                }
+            }
+        }
+
+        this.axisValue = maxValue + minValue;
+    };
+
+    InputAxis.prototype.getAxisValue = function () {
+        return this.axisValue;
+    };
+    return InputAxis;
+})();
+
 var Input = (function () {
     function Input() {
         this.newKeys = [];
@@ -100,6 +151,9 @@ var Input = (function () {
 
         this.newMouseState = new MouseState();
         this.oldMouseState = new MouseState();
+
+        this.buttons = {};
+        this.axes = {};
 
         this.initEvents();
     }
@@ -155,6 +209,96 @@ var Input = (function () {
         this.oldMouseState.clone(this.newMouseState);
     };
 
+    Input.prototype.registerAxis = function (name, positiveKey, negativeKey) {
+        if (this.axes[name] == null) {
+            this.axes[name] = new InputAxis(name);
+        }
+
+        if (positiveKey != null) {
+            this.axes[name].addPositiveKey(positiveKey, 1.0);
+        }
+        if (negativeKey != null) {
+            this.axes[name].addNegativeKey(negativeKey, 1.0);
+        }
+    };
+
+    Input.prototype.getAxis = function (name) {
+        if (this.axes[name] == null) {
+            throw "Error no axis named " + name;
+        }
+
+        this.axes[name].updateAxisValue(this);
+        return this.axes[name].getAxisValue();
+    };
+
+    Input.prototype.registerButton = function (name) {
+        var keys = [];
+        for (var _i = 0; _i < (arguments.length - 1); _i++) {
+            keys[_i] = arguments[_i + 1];
+        }
+        if (this.buttons[name] == null) {
+            this.buttons[name] = [];
+        }
+
+        for (var i = 0, len = keys.length; i < len; ++i) {
+            //todo do we care about the dupes?
+            this.buttons[name].push(keys[i]);
+        }
+    };
+
+    Input.prototype.getButton = function (name) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    Input.prototype.getButtonDown = function (name) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        var result = false;
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                result = true;
+            }
+            if (this.oldKeys[this.buttons[name][i]]) {
+                return false;
+            }
+        }
+
+        return result;
+    };
+
+    Input.prototype.getButtonUp = function (name) {
+        if (this.buttons[name] == null) {
+            throw "No button registered with name " + name;
+            return;
+        }
+
+        var result = false;
+        for (var i = 0, len = this.buttons[name].length; i < len; ++i) {
+            if (this.newKeys[this.buttons[name][i]]) {
+                return false;
+            }
+            if (this.oldKeys[this.buttons[name][i]]) {
+                result = true;
+            }
+        }
+
+        return result;
+    };
+
     Input.prototype.getKey = function (keycode) {
         return this.newKeys[keycode];
     };
@@ -188,3 +332,4 @@ var Input = (function () {
     };
     return Input;
 })();
+//# sourceMappingURL=input.js.map
